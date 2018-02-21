@@ -1,15 +1,12 @@
+package com.tom.JavaDBTask;
 
-
-
-
-public class JavaDBTask {
+public class JavaDBTaskMain {
 
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		System.out.println("Hello World");
+		System.out.println("Hello World3");
 		MySQLConnector.connect();
 	}
 

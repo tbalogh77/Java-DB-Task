@@ -1,9 +1,9 @@
 DROP   DATABASE Orders ;
 
 CREATE DATABASE Orders ;
-CREATE USER 'Abigel'@'localhost' IDENTIFIED BY 'password'; 
-GRANT  ALL PRIVILEGES ON * . * TO 'Abigel'@'localhost'; 
-GRANT  ALL ON Orders.* TO 'Abigel'@'localhost' IDENTIFIED BY 'password' WITH GRANT OPTION; 
+CREATE USER 'Tom'@'localhost' IDENTIFIED BY 'password'; 
+GRANT  ALL PRIVILEGES ON * . * TO 'Tom'@'localhost'; 
+GRANT  ALL ON Orders.* TO 'Tom'@'localhost' IDENTIFIED BY 'password' WITH GRANT OPTION; 
 FLUSH  PRIVILEGES;
 
 CREATE TABLE Orders.order( 

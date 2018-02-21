@@ -7,27 +7,26 @@ import java.util.Properties;
 
 public class MySQLConnector {
 
-	public static void connect() {
-		
-		String url = "jdbc:mysql://localhost:3306/Orders";
-		String username = "Abigel";
-		String password = "password";
-
+	public static boolean connect() {
 		System.out.println("Connecting database...");
 
-	    //private Properties properties;
+		Properties props = new PropsFile().getProperties();
 
-		
-		
-		try  {
-			Connection connection = DriverManager.getConnection(url, username, password);
-		    System.out.println("Database connected!");
-		} catch (SQLException e) {
-		    throw new IllegalStateException("Cannot connect the database!", e);
+		if (null == props) {
+			System.out.println("Could not load properties file");
+			return false;
 		}
-		
-		
+
+		try {
+			Connection connection = DriverManager.getConnection(
+					props.getProperty("dburl"), props.getProperty("dbuser"),
+					props.getProperty("dbpassword")
+			);
+		} catch (SQLException e) {
+			throw new IllegalStateException("Cannot connect the database!", e);
+		}
+		System.out.println("Connected to database " + props.getProperty("dburl") + " as user " + props.getProperty("dbuser"));
+		return true;
 	}
 
-	
 }

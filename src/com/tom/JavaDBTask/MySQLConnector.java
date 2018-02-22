@@ -8,8 +8,6 @@ import java.util.Properties;
 public class MySQLConnector {
 
 	public static boolean connect() {
-		System.out.println("Connecting database...");
-
 		Properties props = new PropsFile().getProperties();
 
 		if (null == props) {
@@ -18,6 +16,7 @@ public class MySQLConnector {
 		}
 
 		try {
+			System.out.println("Connecting to database " + props.getProperty("dburl") + " as user \"" + props.getProperty("dbuser") + "\"");
 			Connection connection = DriverManager.getConnection(
 					props.getProperty("dburl"), props.getProperty("dbuser"),
 					props.getProperty("dbpassword")
@@ -25,7 +24,6 @@ public class MySQLConnector {
 		} catch (SQLException e) {
 			throw new IllegalStateException("Cannot connect the database!", e);
 		}
-		System.out.println("Connected to database " + props.getProperty("dburl") + " as user " + props.getProperty("dbuser"));
 		return true;
 	}
 

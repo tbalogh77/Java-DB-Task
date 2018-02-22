@@ -19,6 +19,10 @@ public class JavaDBTaskMain {
 		//propsFile.store();
 		//System.out.println(propsFile.getProperties().getProperty("dbuser"));
 		MySQLConnector.connect();
+		
+		FTPConnector ftpConnector = new FTPConnector("speedtest.tele2.net", "anonymous", "anonymous");
+		ftpConnector.upload("data/inputFile.csv", "upload/inputFile.csv");
+		//ftpConnector.upload();
 	}
 
 }

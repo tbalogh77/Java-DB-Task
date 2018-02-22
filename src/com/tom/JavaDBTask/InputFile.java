@@ -3,9 +3,13 @@ package com.tom.JavaDBTask;
 import java.util.List;
 import java.util.Vector;
 
+
+
 public class InputFile extends CSVFile {
-	private static final List<String> m_lstHeader;
-	static {
+	public InputFile(String strFileName) {
+		super(strFileName);
+	}
+	protected void createHeader() {
 		m_lstHeader = new Vector<String>();
 		m_lstHeader.add("LineNumber");
 		m_lstHeader.add("OrderItemId");
@@ -20,28 +24,6 @@ public class InputFile extends CSVFile {
 		m_lstHeader.add("Status");
 		m_lstHeader.add("OrderDate");
 	}
-
-	public InputFile(String strFileName) {
-		super(strFileName);
-	}
-
-	/*
-	 * public List<String> getValues() { Vector<String> values = new
-	 * Vector<String>(); values.add("Tom"); values.add(Integer.toString(42));
-	 * values.add(Float.toString(3.14f)); //
-	 * values.add(astrologicalSign.toString()); return values; }
-	 */
-	/*private void construct(List<String> values) {
-
-		// String _name = values.get(0);
-		// int _age = Integer.parseInt(values.get(1));
-		// float _shoeSize = Float.parseFloat(values.get(2));
-		// CustomType _aSign = new CustomType(values.get(3));
-
-		int _LineNumber = Integer.parseInt(values.get(0));
-
-		// return new MyClass(_name, _age, _shoeSize, _aSign);
-	}*/
 	private boolean validateHeader(List<String> header) {
 		if (m_lstHeader.size() != header.size())
 			return false;
@@ -62,14 +44,6 @@ public class InputFile extends CSVFile {
 			return false;
 
 		if (!validateHeader(m_lstLines.get(0))) return false;
-	    /*values = parseLine(reader);*/
-
-		
 		return true;
-	}
-
-	public boolean store() {
-		m_lstLines.add(m_lstHeader);
-		return super.store();
 	}
 }

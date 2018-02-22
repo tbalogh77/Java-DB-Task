@@ -22,11 +22,15 @@ public class CSVFile {
 	private static final int COMMA = ',' ;
 
 	protected final String m_strFileName;
+	protected List<String> m_lstHeader = null;
 	
 	protected List<List<String>> m_lstLines = new Vector<List<String>>();
 	
 	public CSVFile(String strFileName) {
 		m_strFileName = strFileName;
+		createHeader();
+	}
+	protected void createHeader() {
 	}
 	private void writeLine(Writer writer, List<String> values) throws IOException {
 		boolean firstVal = true;
@@ -38,7 +42,7 @@ public class CSVFile {
 			for (int i = 0; i < str.length(); i++) {
 				char ch = str.charAt(i);
 				if (ch == QUOT) {
-					writer.write(QUOT); // extra quote
+					writer.write(QUOT);
 				}
 				writer.write(ch);
 			}
@@ -71,8 +75,6 @@ public class CSVFile {
 				if (ch == QUOT) {
 					inquotes = true;
 					if (started) {
-						// if this is the second quote in a value, add a quote
-						// this is for the double quote in the middle of a value
 						curVal.append(QUOT);
 					}
 				} else if (ch == COMMA) {
@@ -80,9 +82,7 @@ public class CSVFile {
 					curVal = new StringBuffer();
 					started = false;
 				} else if (ch == TAB) {
-					// ignore LF characters
 				} else if (ch == EOL) {
-					// end of a line, break out
 					break;
 				} else {
 					curVal.append((char) ch);
@@ -95,6 +95,8 @@ public class CSVFile {
 	}
 	public boolean store() {
 		OutputStream stream = null;
+
+		if ( null != m_lstHeader ) m_lstLines.add(m_lstHeader);
 
 		try {
 			stream = new FileOutputStream(m_strFileName);
@@ -138,7 +140,7 @@ public class CSVFile {
 		    	for ( String str : item ) {
 		    		System.out.println(str);
 		    	} 
-	    		System.out.println("EOL");
+	    		System.out.println("----------------------------------");
 		    } 
 		    reader.close();
 		    //return collection;

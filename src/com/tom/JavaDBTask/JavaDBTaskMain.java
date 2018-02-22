@@ -7,10 +7,13 @@ public class JavaDBTaskMain {
 	 */
 	public static void main(String[] args) {
 		
-		InputFile inputFile = new InputFile("data/a.csv");
+		InputFile inputFile = new InputFile("data/inputFile.csv");
 		inputFile.store();
 		inputFile.load();
 		
+		ResponseFile responseFile = new ResponseFile("data/responseFile.csv");
+		responseFile.store();
+		responseFile.load();
 		
 		PropsFile propsFile = new PropsFile();
 		//propsFile.store();

@@ -5,10 +5,15 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.nio.file.*;
+import java.util.Enumeration;
 import java.util.Properties;
 
 public class PropsFile {
-	////TODO: check file exists
+	static final public String strPassword = "password";
+	static final public String strUrl = "url";
+	static final public String strUser = "user";
+	
 	static final private String m_strFileName = "data/db.props";
 	private Properties m_props = null;
 	
@@ -16,17 +21,24 @@ public class PropsFile {
 		if ( null == m_props ) this.load();
 		return m_props;
 	}
-	
+	private  void printProps(Properties props) {
+		Enumeration e = props.propertyNames();
+		while (e.hasMoreElements()) {
+			String key = (String) e.nextElement();
+			if ( !key.equalsIgnoreCase(strPassword)) System.out.println(key + " -> " + props.getProperty(key));
+		}
+	}
 	public boolean store() {
+		///TODO: some more error check needed: Existence of "data" dir 4xmpl
 		OutputStream stream = null;
 
 		if ( null == m_props ) m_props = new Properties();
 		
 		try {
 			stream = new FileOutputStream(m_strFileName);
-			m_props.setProperty("dburl", "jdbc:mysql://localhost:3306/Orders");
-			m_props.setProperty("dbuser", "Tom");
-			m_props.setProperty("dbpassword", "password");
+			m_props.setProperty(strUrl, "jdbc:mysql://localhost:3306/Orders");
+			m_props.setProperty(strUser, "Tom");
+			m_props.setProperty(strPassword, "password");
 			m_props.store(stream, null);
 		} catch (IOException io) {
 			io.printStackTrace();
@@ -51,6 +63,11 @@ public class PropsFile {
 
 		if ( null == m_props ) m_props = new Properties();
 
+		if (!Files.exists(Paths.get(m_strFileName))) {
+			System.out.println("Prop file " + m_strFileName + " does not exist, creating it from scratch");
+			store();
+		}
+		
 		try {
 			stream = new FileInputStream(m_strFileName);
 			m_props.load(stream);
@@ -68,6 +85,7 @@ public class PropsFile {
 			}
 		}
 		System.out.println("Prop file " + m_strFileName + " loaded");
+		printProps(m_props);
 		return true;
 	}
 }

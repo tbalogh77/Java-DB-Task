@@ -16,11 +16,11 @@ public class MySQLConnector {
 		}
 
 		try {
-			System.out.println("Connecting to database " + props.getProperty("dburl") + " as user \"" + props.getProperty("dbuser") + "\"");
-			Connection connection = DriverManager.getConnection(
-					props.getProperty("dburl"), props.getProperty("dbuser"),
-					props.getProperty("dbpassword")
-			);
+			String strUser = props.getProperty(PropsFile.strUser);
+			String strPass = props.getProperty(PropsFile.strPassword);
+			String strUrl = props.getProperty(PropsFile.strUrl);
+			System.out.println("Connecting to database " + strUrl + " as user \"" + strUser + "\"");
+			Connection connection = DriverManager.getConnection(strUrl, strUser, strPass);
 		} catch (SQLException e) {
 			throw new IllegalStateException("Cannot connect the database!", e);
 		}

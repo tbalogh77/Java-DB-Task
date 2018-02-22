@@ -14,25 +14,22 @@ import java.io.Writer;
 import java.util.List;
 import java.util.Properties;
 import java.util.Vector;
-
 public class CSVFile {
-	private static final int EOL   = '\n';
-	private static final int TAB   = '\r';
-	private static final int QUOT  = '\"';
-	private static final int COMMA = ',' ;
-
+	private static final int EOL = '\n';
+	private static final int TAB = '\r';
+	private static final int QUOT = '\"';
+	private static final int COMMA = ',';
+	
 	protected final String m_strFileName;
-	protected List<String> m_lstHeader = null;
-	
-	protected List<List<String>> m_lstLines = new Vector<List<String>>();
-	
-	public CSVFile(String strFileName) {
+	protected CSVContent m_Content = new CSVContent();
+	public CSVContent getContent() { return m_Content;}
+
+	public CSVFile(String strFileName, String [] straHeaders) {
 		m_strFileName = strFileName;
-		createHeader();
-	}
-	protected void createHeader() {
+	 	m_Content.createHeader(straHeaders);
 	}
 	private void writeLine(Writer writer, List<String> values) throws IOException {
+		///TODO: improve this primitive, intuitive, beautiful writer, parser
 		boolean firstVal = true;
 		for (String str : values) {
 			if (!firstVal) {
@@ -52,6 +49,7 @@ public class CSVFile {
 		writer.write(EOL);
 	}
 	private List<String> parseLine(Reader reader) throws IOException {
+		///TODO: improve this primitive, intuitive, beautiful writer, parser
 		int ch = reader.read();
 		while (ch == TAB) {
 			ch = reader.read();
@@ -94,16 +92,21 @@ public class CSVFile {
 		return store;
 	}
 	public boolean store() {
+		///TODO: some more error check needed: Existence of path in m_strFileName 4xmpl
 		OutputStream stream = null;
-
-		if ( null != m_lstHeader ) m_lstLines.add(m_lstHeader);
 
 		try {
 			stream = new FileOutputStream(m_strFileName);
 			Writer writer = new OutputStreamWriter(stream, "UTF-8");
-		    for ( List<String> item : m_lstLines ) {
+
+			List<List<String>> lstSCVContent = m_Content.getContent();
+			if ( null == lstSCVContent ) {
+				System.out.println("Will not store empty CSV file " + m_strFileName);
+				return false;
+			}
+			for (List<String> item : lstSCVContent) {
 				writeLine(writer, item);
-		    } 
+			}
 			writer.flush();
 			writer.close();
 		} catch (IOException io) {
@@ -123,27 +126,33 @@ public class CSVFile {
 		System.out.println("CSV file " + m_strFileName + " stored");
 		return true;
 	}
+
 	public boolean load() {
 		InputStream stream = null;
+		m_Content.clearData();
 		System.out.println("Loading CSV file " + m_strFileName);
 
 		try {
 			stream = new FileInputStream(m_strFileName);
-		    Reader reader = new InputStreamReader(stream, "UTF-8");
-		    List<String> values = null;
-		    while ((values = parseLine(reader)) !=null) {
-		    	m_lstLines.add(values);
-		        values = parseLine(reader);
-		    }
-		    
-		    for ( List<String> item : m_lstLines ) {
-		    	for ( String str : item ) {
-		    		System.out.println(str);
-		    	} 
-	    		System.out.println("----------------------------------");
-		    } 
-		    reader.close();
-		    //return collection;
+			Reader reader = new InputStreamReader(stream, "UTF-8");
+			List<String> lstLine = null;
+
+			int nLines = 0;
+			while ((lstLine = parseLine(reader)) != null) {
+				if (0 == nLines++) {
+					if (m_Content.addValidateHeader(lstLine)) {
+						System.out.println("CSV file " + m_strFileName
+								+ " validated successfully");
+					} else {
+						return false;
+					}
+				} else {
+					System.out.println("YYYYYY" + lstLine);					
+					m_Content.addLine(lstLine);
+				}
+			}
+			m_Content.printContent(nLines + " csv lines parsed");
+			reader.close();
 		} catch (IOException ex) {
 			ex.printStackTrace();
 			return false;

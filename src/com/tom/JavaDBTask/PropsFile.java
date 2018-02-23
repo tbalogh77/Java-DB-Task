@@ -67,7 +67,6 @@ public class PropsFile {
 			System.out.println("Prop file " + m_strFileName + " does not exist, creating it from scratch");
 			store();
 		}
-		
 		try {
 			stream = new FileInputStream(m_strFileName);
 			m_props.load(stream);

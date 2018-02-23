@@ -20,7 +20,8 @@ public class FTPConnector {
 		m_strPass   = strPass;
 	}
 	
-    public void upload(String strLocalFilePath, String strRemoteFilePath) {
+    public boolean upload(String strLocalFilePath, String strRemoteFilePath) {
+    	boolean bSuccess = false;
         int port = 21;
  
         FTPClient ftpClient = new FTPClient();
@@ -38,6 +39,7 @@ public class FTPConnector {
             boolean done = ftpClient.storeFile(strRemoteFilePath, inputStream);
             inputStream.close();
             if (done) {
+            	bSuccess = true;
                 System.out.println(strLocalFilePath + " uploaded successfully to FTP server " + m_strServer);
             }
  
@@ -54,6 +56,7 @@ public class FTPConnector {
                 ex.printStackTrace();
             }
         }
+        return bSuccess;
     }
  	
 	

@@ -13,7 +13,8 @@ import javax.mail.internet.*;
 
 public class Order {
 
-	private final static DateFormat m_dfFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
+	private final static DateFormat m_dfFormat = new SimpleDateFormat(
+			"yyyy-MM-dd", Locale.ENGLISH);
 
 	public enum OrderStatus {
 		IN_STOCK(0, "IN_STOCK"), OUT_OF_STOCK(1, "OUT_OF_STOCK");
@@ -102,23 +103,25 @@ public class Order {
 
 		for (int nIndex = 0; nIndex < nLines; nIndex++) {
 			List<String> lstLine = csvContent.getLines().get(nIndex);
+			final int nActLineNumber = nIndex + 1;
 			// /Last Item "OrderDate" can be missing
 			if (lstLine.size() < nHeaders - 1)
 				return Error(nIndex, "Short Content");
 
 			Order order = new Order();
-			String strError = order.fromCSV(nIndex + 1, lstHeader, lstLine);
+			String strError = order.fromCSV(nActLineNumber, lstHeader, lstLine);
 			if (null == strError) {
 				// /Have a valid Order object
-				order.dbInsertOrder();
-				order.dbInsertOrderItem();
+				if (null != (strError = order.dbInsertItem()))
+					return Error(nActLineNumber, strError);
 			} else
-				return Error(nIndex + 1, strError);
+				return Error(nActLineNumber, strError);
 		}
 
 		ResponseFile.createFile(0, true, null);
 		return "CSVFile " + strCSVFileName + " processed without error";
 	}
+
 	public String fromCSV(int nLineNum, List<String> lstHeader,
 			List<String> lstLine) {
 		final String strErrorPosInt = " must be an Integer > 0";
@@ -188,7 +191,7 @@ public class Order {
 			case 11:
 				if (0 == strItem.length())
 					break;
-		
+
 				try {
 					datOrderDate = m_dfFormat.parse(strItem);
 				} catch (ParseException pe) {
@@ -202,27 +205,51 @@ public class Order {
 		}
 		return null;
 	}
-	private void dbInsertOrder() {
-		fOrderTotalValue = fSalePrice+fShippingPrice;
 
-		final String strSQLCommand = "INSERT INTO Orders.order "
-				+ "( BuyerName,BuyerEmail,OrderDate,OrderTotalValue,Address,Postcode) "
-				+ "VALUES (\"" + strBuyerName + "\", \"" + strBuyerEmail
-				+ "\", \"" + m_dfFormat.format(datOrderDate) + "\", " + fOrderTotalValue + ", \"" + strAddress
-				+ "\", " + nPostCode + "  );";
-		
-		System.out.println(strSQLCommand);
+	private String dbExecCommand(String strSQLCmd) {
 		MySQLConnector mySQLConnector = new MySQLConnector();
-		nOrderId = mySQLConnector.executeSQLCommand(strSQLCommand);
+		if (mySQLConnector.execUpdateSQLCommand(strSQLCmd) < 0)
+			return "DB error: " + mySQLConnector.getLastErrorString();
+		return null;
 	}
-	private void dbInsertOrderItem() {
-		float fTotalPrice = fSalePrice+fShippingPrice;
-		final String strSQLCommand = "INSERT INTO Orders.order_item ( OrderId,SalePrice,ShippingPrice,TotalItemPrice,SKU,Status ) " +
-				"VALUES ("+  nOrderId +","+ fSalePrice +","+fShippingPrice+","+fTotalPrice+",\"SKU\",\""+eStatus.m_strName+"\") ;";
 
-		
-		System.out.println(strSQLCommand);
+	private String dbInsertOrder() {
+		fOrderTotalValue = fSalePrice + fShippingPrice;
+		final String strSQLCmd = "INSERT INTO Orders.order "
+				+ "( OrderId,BuyerName,BuyerEmail,OrderDate,OrderTotalValue,Address,Postcode) "
+				+ "VALUES (" + nOrderId + ", \"" + strBuyerName + "\", \""
+				+ strBuyerEmail + "\", \"" + m_dfFormat.format(datOrderDate)
+				+ "\", " + fOrderTotalValue + ", \"" + strAddress + "\", "
+				+ nPostCode + "  );";
+
+		if (!dbHaveTableWithId("Orders.order", "OrderId", nOrderId)) return dbExecCommand(strSQLCmd); 
+		return null;
+	}
+
+	private String dbInsertOrderItem() {
+		float fTotalPrice = fSalePrice + fShippingPrice;
+		final String strSQLCmd = "INSERT INTO Orders.order_item ( OrderItemId,OrderId,SalePrice,ShippingPrice,TotalItemPrice,SKU,Status ) "
+				+ "VALUES (" + nOrderItemId + "," + nOrderId + "," + fSalePrice + "," + fShippingPrice
+				+ "," + fTotalPrice	+ ",\"SKU\",\""	+ eStatus.m_strName + "\") ;";
+		if (dbHaveTableWithId("Orders.order_item", "OrderItemId", nOrderItemId))
+			return "OrderItemId already exists in DataBase";
+		else
+			return dbExecCommand(strSQLCmd);
+	}
+
+	private boolean dbHaveTableWithId(String strTable, String strIdName, int nId) {
+		final String strSQLCmd = "SELECT * FROM " + strTable + " WHERE "
+				+ strIdName + " = " + nId + ";";
 		MySQLConnector mySQLConnector = new MySQLConnector();
-		nOrderItemId = mySQLConnector.executeSQLCommand(strSQLCommand);
+		return 0 < mySQLConnector.countRawsOfSelect(strSQLCmd);
+	}
+	private String dbUpdateOrderTotalValue( int nXXXX) {
+		final String strSQLCmd = "UPDATE Orders.order SET OrderTotalValue = (SELECT  SUM(TotalItemPrice) FROM Orders.order_item WHERE OrderId = "+nXXXX+") WHERE OrderId = "+nXXXX+";";
+		return dbExecCommand(strSQLCmd);
+	}
+	private String dbInsertItem() {
+		String strError = null;
+		if (null != (strError = dbInsertOrder()) || null != (strError = dbInsertOrderItem())) return strError;
+		return dbUpdateOrderTotalValue(nOrderId);
 	}
 }

@@ -26,5 +26,4 @@ public class ResponseFile extends CSVFile {
 		responseFile.addContent(nLineNumber, bStatus, strMessageOrNULL);
 		responseFile.store();
 	}
-
 }

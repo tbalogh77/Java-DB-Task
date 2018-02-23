@@ -148,7 +148,7 @@ public class CSVFile {
 						return false;
 					}
 				} else {
-					System.out.println("YYYYYY" + lstLine);					
+					System.out.println(lstLine);					
 					m_Content.addLine(lstLine);
 				}
 			}

@@ -7,7 +7,7 @@ GRANT  ALL ON Orders.* TO 'Tom'@'localhost' IDENTIFIED BY 'password' WITH GRANT 
 FLUSH  PRIVILEGES;
 
 CREATE TABLE Orders.order( 
-	OrderId INT NOT NULL AUTO_INCREMENT, 
+	OrderId INT NOT NULL, 
 	BuyerName VARCHAR(256),
 	BuyerEmail VARCHAR(256),
 	OrderDate DATE, 
@@ -19,7 +19,7 @@ CREATE TABLE Orders.order(
 
 
 CREATE TABLE Orders.order_item( 
-	OrderItemId INT NOT NULL AUTO_INCREMENT, 
+	OrderItemId INT NOT NULL, 
 	OrderId INT,
 	SalePrice FLOAT,
 	ShippingPrice FLOAT,

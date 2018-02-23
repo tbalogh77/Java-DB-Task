@@ -1,0 +1,207 @@
+package com.tom.JavaDBTask;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.LineNumberReader;
+import java.io.Writer;
+import java.util.List;
+import java.util.Properties;
+import java.util.Vector;
+
+public class CSVFile {
+	private final String m_strFileName;
+	
+	protected List<List<String>> m_lstLines = new Vector<List<String>>();
+	
+	private static final List<String> m_lstHeader;
+
+	static {
+		m_lstHeader = new Vector<String>();
+		m_lstHeader.add("LineNumber");
+		m_lstHeader.add("OrderItemId");
+		m_lstHeader.add("OrderId");
+		m_lstHeader.add("BuyerName");
+		m_lstHeader.add("BuyerEmail");
+		m_lstHeader.add("Address");
+		m_lstHeader.add("PostCode");
+		m_lstHeader.add("SalePrice");
+		m_lstHeader.add("ShippingPrice");
+		m_lstHeader.add("SKU");
+		m_lstHeader.add("Status");
+		m_lstHeader.add("OrderDate");
+	}
+	public CSVFile(String strFileName) {
+		m_strFileName = strFileName;
+	}
+	/*public List<String> getValues() {
+		Vector<String> values = new Vector<String>();
+		values.add("Tom");
+		values.add(Integer.toString(42));
+		values.add(Float.toString(3.14f));
+		// values.add(astrologicalSign.toString());
+		return values;
+	}*/
+	private boolean validateHeader(List<String> header) {
+		if ( m_lstHeader.size() != header.size() ) return false;
+		for(int i = 0; i < m_lstHeader.size(); i++) {
+			if ( !m_lstHeader.get(i).equalsIgnoreCase(header.get(i)) ) {
+	            System.out.println("Invalid CSV file " + m_strFileName);
+				return false ;
+			}
+        }
+        System.out.println("CSV file " + m_strFileName + " validated successfully");
+		return true;
+	}
+    private void construct(List<String> values) {
+    	 
+        //String _name      = values.get(0);
+        //int    _age       = Integer.parseInt(values.get(1));
+        //float  _shoeSize  = Float.parseFloat(values.get(2));
+        //CustomType _aSign = new CustomType(values.get(3));
+    	
+        int    _LineNumber       = Integer.parseInt(values.get(0));
+    	
+    	
+        //return new MyClass(_name, _age, _shoeSize, _aSign);
+    }
+
+	private void writeLine(Writer w, List<String> values) throws IOException {
+		boolean firstVal = true;
+		for (String val : values) {
+			if (!firstVal) {
+				w.write(",");
+			}
+			w.write("\"");
+			for (int i = 0; i < val.length(); i++) {
+				char ch = val.charAt(i);
+				if (ch == '\"') {
+					w.write("\""); // extra quote
+				}
+				w.write(ch);
+			}
+			w.write("\"");
+			firstVal = false;
+		}
+		w.write("\n");
+	}
+
+	/**
+	 * Returns a null when the input stream is empty
+	 */
+	private List<String> parseLine(Reader r) throws IOException {
+		int ch = r.read();
+		while (ch == '\r') {
+			ch = r.read();
+		}
+		if (ch < 0) {
+			return null;
+		}
+		Vector<String> store = new Vector<String>();
+		StringBuffer curVal = new StringBuffer();
+		boolean inquotes = false;
+		boolean started = false;
+		while (ch >= 0) {
+			if (inquotes) {
+				started = true;
+				if (ch == '\"') {
+					inquotes = false;
+				} else {
+					curVal.append((char) ch);
+				}
+			} else {
+				if (ch == '\"') {
+					inquotes = true;
+					if (started) {
+						// if this is the second quote in a value, add a quote
+						// this is for the double quote in the middle of a value
+						curVal.append('\"');
+					}
+				} else if (ch == ',') {
+					store.add(curVal.toString());
+					curVal = new StringBuffer();
+					started = false;
+				} else if (ch == '\r') {
+					// ignore LF characters
+				} else if (ch == '\n') {
+					// end of a line, break out
+					break;
+				} else {
+					curVal.append((char) ch);
+				}
+			}
+			ch = r.read();
+		}
+		store.add(curVal.toString());
+		return store;
+	}
+	public boolean store() {
+		OutputStream stream = null;
+
+		try {
+			stream = new FileOutputStream(m_strFileName);
+			Writer writer = new OutputStreamWriter(stream, "UTF-8");
+			// List<String> rowValues = getValues();
+			writeLine(writer, m_lstHeader);
+			writer.flush();
+			writer.close();
+		} catch (IOException io) {
+			io.printStackTrace();
+			return false;
+		} finally {
+			if (stream != null) {
+				try {
+					stream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+					return false;
+				}
+			}
+
+		}
+		System.out.println("CSV file " + m_strFileName + " stored");
+		return true;
+	}
+	public boolean load() {
+		InputStream stream = null;
+		System.out.println("Loading CSV file " + m_strFileName);
+
+		try {
+			stream = new FileInputStream(m_strFileName);
+		    Reader reader = new InputStreamReader(stream, "UTF-8");
+		    //List<String> collection = new Vector<String>();
+		    
+		    List<String> values = parseLine(reader);
+		    while (values!=null) {
+		    	m_lstLines.add(values);
+		        values = parseLine(reader);
+		    }
+
+		    /*if (!validateHeader(values)) return false;
+		    values = parseLine(reader);*/
+
+		    reader.close();
+		    //return collection;
+		} catch (IOException ex) {
+			ex.printStackTrace();
+			return false;
+		} finally {
+			if (stream != null) {
+				try {
+					stream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+					return false;
+				}
+			}
+		}
+		System.out.println("CSV file " + m_strFileName + " loaded");
+		return true;
+	}
+}

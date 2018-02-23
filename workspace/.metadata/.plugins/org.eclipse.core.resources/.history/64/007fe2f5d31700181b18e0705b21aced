@@ -1,0 +1,49 @@
+package com.tom.JavaDBTask;
+
+import java.util.List;
+import java.util.Vector;
+
+
+
+public class InputFile extends CSVFile {
+	public InputFile(String strFileName) {
+		super(strFileName);
+	}
+	protected void createHeader() {
+		//m_lstHeader = new Vector<String>();
+		m_Content.addToHeader("LineNumber");
+		m_Content.addToHeader("OrderItemId");
+		m_Content.addToHeader("OrderId");
+		m_Content.addToHeader("BuyerName");
+		m_Content.addToHeader("BuyerEmail");
+		m_Content.addToHeader("Address");
+		m_Content.addToHeader("PostCode");
+		m_Content.addToHeader("SalePrice");
+		m_Content.addToHeader("ShippingPrice");
+		m_Content.addToHeader("SKU");
+		m_Content.addToHeader("Status");
+		m_Content.addToHeader("OrderDate");
+	}
+	/*private boolean validateHeader(List<String> header) {
+		if (m_lstHeader.size() != header.size())
+			return false;
+		for (int i = 0; i < m_lstHeader.size(); i++) {
+			if (!m_lstHeader.get(i).equalsIgnoreCase(header.get(i))) {
+				System.out.println("Invalid CSV file " + m_strFileName);
+				return false;
+			}
+		}
+		System.out.println("CSV file " + m_strFileName
+				+ " validated successfully");
+		return true;
+	}
+
+	public boolean load() {
+		m_lstHeader.clear();
+		if (!super.load())
+			return false;
+
+		if (!validateHeader(m_lstLines.get(0))) return false;
+		return true;
+	}*/
+}

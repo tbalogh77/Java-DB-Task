@@ -1,0 +1,27 @@
+package com.tom.JavaDBTask;
+
+import java.util.List;
+import java.util.Vector;
+
+public class CSVContent {
+	
+	protected List<String> m_lstHeader = null;
+	protected List<List<Object>> m_lstLines = new Vector<List<Object>>();
+
+	public List<List<String>> getContent() {
+		if ( null == m_lstHeader || 0 == m_lstHeader.size()) return null; 
+		List<List<String>> lstContent = new Vector<List<String>>();
+		lstContent.add(m_lstHeader);
+		return lstContent;
+	}
+	
+
+	public void clearHeader() {
+		m_lstHeader.clear();
+	}
+	public void addToHeader(String str) {
+		m_lstHeader.add(str);
+	}
+
+	
+}

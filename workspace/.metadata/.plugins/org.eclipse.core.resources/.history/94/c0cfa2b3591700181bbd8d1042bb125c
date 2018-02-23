@@ -1,0 +1,10 @@
+package com.tom.JavaDBTask;
+
+public class InputFile extends CSVFile {
+
+	public InputFile(String strFileName) {
+		super(strFileName);
+	}
+
+	
+}

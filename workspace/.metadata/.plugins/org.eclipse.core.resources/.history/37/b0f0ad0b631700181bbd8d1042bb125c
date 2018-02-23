@@ -1,0 +1,10 @@
+package com.tom.JavaDBTask;
+
+public class responseFile extends CSVFile {
+
+	public responseFile(String strFileName) {
+		super(strFileName);
+		// TODO Auto-generated constructor stub
+	}
+
+}

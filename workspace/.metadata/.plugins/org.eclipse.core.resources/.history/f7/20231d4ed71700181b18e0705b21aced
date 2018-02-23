@@ -1,0 +1,87 @@
+package com.tom.JavaDBTask;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.file.*;
+import java.util.Enumeration;
+import java.util.Properties;
+
+public class PropsFile {
+	////TODO: check file exists
+	static final private String m_strFileName = "data/db.props";
+	private Properties m_props = null;
+	
+	public Properties getProperties() {
+		if ( null == m_props ) this.load();
+		return m_props;
+	}
+	private  void printProps(Properties props) {
+		Enumeration e = props.propertyNames();
+		while (e.hasMoreElements()) {
+			String key = (String) e.nextElement();
+			System.out.println(key + " -> " + props.getProperty(key));
+		}
+	}
+	public boolean store() {
+		OutputStream stream = null;
+
+		if ( null == m_props ) m_props = new Properties();
+		
+		try {
+			stream = new FileOutputStream(m_strFileName);
+			m_props.setProperty("url", "jdbc:mysql://localhost:3306/Orders");
+			m_props.setProperty("user", "Tom");
+			m_props.setProperty("password", "password");
+			m_props.store(stream, null);
+		} catch (IOException io) {
+			io.printStackTrace();
+			return false;
+		} finally {
+			if (stream != null) {
+				try {
+					stream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+					return false;
+				}
+			}
+
+		}
+		System.out.println("Prop file " + m_strFileName + " stored");
+		return true;
+	}
+	
+	public boolean load() {
+		InputStream stream = null;
+
+		if ( null == m_props ) m_props = new Properties();
+
+		if (!Files.exists(Paths.get(m_strFileName))) {
+			System.out.println("Prop file " + m_strFileName + "does not exists, creating it from scratch");
+			store();
+		}
+		
+		try {
+			stream = new FileInputStream(m_strFileName);
+			m_props.load(stream);
+		} catch (IOException ex) {
+			ex.printStackTrace();
+			return false;
+		} finally {
+			if (stream != null) {
+				try {
+					stream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+					return false;
+				}
+			}
+		}
+		System.out.println("Prop file " + m_strFileName + " loaded");
+		printProps(m_props);
+		return true;
+	}
+}

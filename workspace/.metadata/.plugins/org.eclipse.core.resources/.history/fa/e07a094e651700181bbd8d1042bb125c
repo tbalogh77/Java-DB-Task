@@ -1,0 +1,25 @@
+package com.tom.JavaDBTask;
+
+import java.util.Vector;
+
+public class ResponseFile extends CSVFile {
+	public ResponseFile(String strFileName) {
+		super(strFileName);
+		// TODO Auto-generated constructor stub
+	}
+	protected void createHeader() {
+		m_lstHeader = new Vector<String>();
+		m_lstHeader.add("LineNumber");
+		m_lstHeader.add("OrderItemId");
+		m_lstHeader.add("OrderId");
+		m_lstHeader.add("BuyerName");
+		m_lstHeader.add("BuyerEmail");
+		m_lstHeader.add("Address");
+		m_lstHeader.add("PostCode");
+		m_lstHeader.add("SalePrice");
+		m_lstHeader.add("ShippingPrice");
+		m_lstHeader.add("SKU");
+		m_lstHeader.add("Status");
+		m_lstHeader.add("OrderDate");
+	}
+}

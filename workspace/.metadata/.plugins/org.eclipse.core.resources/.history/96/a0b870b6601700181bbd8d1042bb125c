@@ -1,0 +1,162 @@
+package com.tom.JavaDBTask;
+
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Reader;
+import java.io.LineNumberReader;
+import java.io.Writer;
+import java.util.List;
+import java.util.Properties;
+import java.util.Vector;
+
+public class CSVFile {
+	protected final String m_strFileName;
+	private static final int EOL = '\n';
+	private static final int TAB = '\r';
+	private static final int QUOT = '\"';
+	
+	protected List<List<String>> m_lstLines = new Vector<List<String>>();
+	
+	public CSVFile(String strFileName) {
+		m_strFileName = strFileName;
+	}
+	private void writeLine(Writer writer, List<String> values) throws IOException {
+		boolean firstVal = true;
+		for (String val : values) {
+			if (!firstVal) {
+				writer.write(",");
+			}
+			writer.write("\"");
+			for (int i = 0; i < val.length(); i++) {
+				char ch = val.charAt(i);
+				if (ch == QUOT) {
+					writer.write("\""); // extra quote
+				}
+				writer.write(ch);
+			}
+			writer.write("\"");
+			firstVal = false;
+		}
+		writer.write(EOL);
+	}
+
+	/**
+	 * Returns a null when the input stream is empty
+	 */
+	private List<String> parseLine(Reader reader) throws IOException {
+		int ch = reader.read();
+		while (ch == TAB) {
+			ch = reader.read();
+		}
+		if (ch < 0) {
+			return null;
+		}
+		Vector<String> store = new Vector<String>();
+		StringBuffer curVal = new StringBuffer();
+		boolean inquotes = false;
+		boolean started = false;
+		while (ch >= 0) {
+			if (inquotes) {
+				started = true;
+				if (ch == '\"') {
+					inquotes = false;
+				} else {
+					curVal.append((char) ch);
+				}
+			} else {
+				if (ch == QUOT) {
+					inquotes = true;
+					if (started) {
+						// if this is the second quote in a value, add a quote
+						// this is for the double quote in the middle of a value
+						curVal.append(QUOT);
+					}
+				} else if (ch == ',') {
+					store.add(curVal.toString());
+					curVal = new StringBuffer();
+					started = false;
+				} else if (ch == TAB) {
+					// ignore LF characters
+				} else if (ch == EOL) {
+					// end of a line, break out
+					break;
+				} else {
+					curVal.append((char) ch);
+				}
+			}
+			ch = reader.read();
+		}
+		store.add(curVal.toString());
+		return store;
+	}
+	public boolean store() {
+		OutputStream stream = null;
+
+		try {
+			stream = new FileOutputStream(m_strFileName);
+			Writer writer = new OutputStreamWriter(stream, "UTF-8");
+		    for ( List<String> item : m_lstLines ) {
+				writeLine(writer, item);
+		    } 
+			writer.flush();
+			writer.close();
+		} catch (IOException io) {
+			io.printStackTrace();
+			return false;
+		} finally {
+			if (stream != null) {
+				try {
+					stream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+					return false;
+				}
+			}
+
+		}
+		System.out.println("CSV file " + m_strFileName + " stored");
+		return true;
+	}
+	public boolean load() {
+		InputStream stream = null;
+		System.out.println("Loading CSV file " + m_strFileName);
+
+		try {
+			stream = new FileInputStream(m_strFileName);
+		    Reader reader = new InputStreamReader(stream, "UTF-8");
+		    List<String> values = null;
+		    while ((values = parseLine(reader)) !=null) {
+		    	m_lstLines.add(values);
+		        values = parseLine(reader);
+		    }
+		    
+		    for ( List<String> item : m_lstLines ) {
+		    	for ( String str : item ) {
+		    		System.out.println(str);
+		    	} 
+	    		System.out.println("EOL");
+		    } 
+		    reader.close();
+		    //return collection;
+		} catch (IOException ex) {
+			ex.printStackTrace();
+			return false;
+		} finally {
+			if (stream != null) {
+				try {
+					stream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+}

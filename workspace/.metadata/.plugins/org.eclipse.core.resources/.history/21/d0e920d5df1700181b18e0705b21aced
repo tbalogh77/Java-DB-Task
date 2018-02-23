@@ -1,0 +1,25 @@
+package com.tom.JavaDBTask;
+
+public class JavaDBTaskMain {
+
+	/**
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		
+		InputFile inputFile = new CSVFile("data/inputFile.csv", CSVFile.straInputHeaders);
+		inputFile.store();
+		inputFile.load();
+		
+		ResponseFile responseFile = new ResponseFile("data/responseFile.csv");
+		responseFile.store();
+		responseFile.load();
+		
+		PropsFile propsFile = new PropsFile();
+		//propsFile.store();
+		MySQLConnector.connect();
+		
+		FTPConnector ftpConnector = new FTPConnector("speedtest.tele2.net", "anonymous", "anonymous");
+		ftpConnector.upload("data/inputFile.csv", "upload/inputFile.csv");
+	}
+}

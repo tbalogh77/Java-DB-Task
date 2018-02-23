@@ -1,0 +1,9 @@
+package com.tom.JavaDBTask;
+
+import java.util.Vector;
+
+public class ResponseFile extends CSVFile {
+	public ResponseFile(String strFileName) {
+		super(strFileName, CSVContent.straResponseHeaders);
+	}
+}

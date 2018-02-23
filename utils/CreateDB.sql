@@ -10,7 +10,7 @@ CREATE TABLE Orders.order(
 	OrderId INT NOT NULL AUTO_INCREMENT, 
 	BuyerName VARCHAR(256),
 	BuyerEmail VARCHAR(256),
-	OrderTotalValue INT,
+	OrderTotalValue FLOAT,
 	Address VARCHAR(256),
 	OrderDate DATE, 
 	PRIMARY KEY ( OrderId ) 

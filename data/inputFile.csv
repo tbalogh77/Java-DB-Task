@@ -1,0 +1,4 @@
+"LineNumber","OrderItemId","OrderId","BuyerName","BuyerEmail","Address","PostCode","SalePrice","ShippingPrice","SKU","Status","OrderDate"
+"1","132","144","BuyerName","balogh00@gmail.com","Address","132","1.0","0","SKU","OUT_OF_STOCK","1977-05-16"
+"2","132","144","BuyerName","a@b.hu","Address","132","1.0","0","SKU","IN_STOCK","2018-02-23"
+"3","132","144","BuyerName","zsolt@worldofbooks.com","Address","132","1.0","0","SKU","OUT_OF_STOCK"

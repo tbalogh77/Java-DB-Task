@@ -99,12 +99,13 @@ public class CSVFile {
 			stream = new FileOutputStream(m_strFileName);
 			Writer writer = new OutputStreamWriter(stream, "UTF-8");
 
-			List<List<String>> lstSCVContent = m_Content.getContent();
+			/*List<List<String>> lstSCVContent = m_Content.getContent();
 			if ( null == lstSCVContent ) {
 				System.out.println("Will not store empty CSV file " + m_strFileName);
 				return false;
-			}
-			for (List<String> item : lstSCVContent) {
+			}*/
+			writeLine(writer, m_Content.getHeader());
+			for (List<String> item : m_Content.getLines()) {
 				writeLine(writer, item);
 			}
 			writer.flush();

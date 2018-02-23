@@ -26,22 +26,26 @@ public class Order {
 			m_nValue = nValue;
 			m_strName = strName;
 		}
+		
+		public String toString() { 
+		    return m_strName;
+		} 
 	}
 
-	public int nLineNumber = 0;
-	public int nOrderItemId = 0;
-	public int nOrderId = 0;
-	public String strBuyerName = "";
-	public String strBuyerEmail = "";
-	public Date datOrderDate = new Date();
-	public float fOrderTotalValue = 0.0f;
-	public String strAddress = "";
-	public int nPostCode = 0;
+	public int 			m_nLineNumber 		= 0;
+	public int 			m_nOrderItemId 		= 0;
+	public int 			m_nOrderId 			= 0;
+	public String 		m_strBuyerName 		= "";
+	public String 		m_strBuyerEmail 	= "";
+	public Date 		m_datOrderDate 		= new Date();
+	public float 		m_fOrderTotalValue	= 0.0f;
+	public String 		m_strAddress 		= "";
+	public int 			m_nPostCode 		= 0;
 
-	public float fSalePrice = 0.0f;
-	public float fShippingPrice = 0.0f;
-	public String strSKU = "";
-	public OrderStatus eStatus = OrderStatus.OUT_OF_STOCK;
+	public float 		m_fSalePrice 			= 0.0f;
+	public float 		m_fShippingPrice 		= 0.0f;
+	public String 		m_strSKU 				= "";
+	public OrderStatus 	m_eStatus 				= OrderStatus.OUT_OF_STOCK;
 
 	public Order() {
 	}
@@ -122,7 +126,7 @@ public class Order {
 		return "CSVFile " + strCSVFileName + " processed without error";
 	}
 
-	public String fromCSV(int nLineNum, List<String> lstHeader,
+	public String fromCSV(int nLineNumber, List<String> lstHeader,
 			List<String> lstLine) {
 		final String strErrorPosInt = " must be an Integer > 0";
 		int nLineSize = lstLine.size();
@@ -134,53 +138,53 @@ public class Order {
 
 			switch (nIndex) {
 			case 0:
-				if ((nLineNumber = parseInt(strItem)) < 0)
+				if ((m_nLineNumber = parseInt(strItem)) < 0)
 					return "LineNumber" + strErrorPosInt;
-				if (nLineNumber != nLineNum)
+				if (m_nLineNumber != nLineNumber)
 					return "Line number does not match";
 				break;
 
 			case 1:
 				// /Todo: check if OrderItemId is already in db (error if true)
-				if ((nOrderItemId = parseInt(strItem)) < 0)
+				if ((m_nOrderItemId = parseInt(strItem)) < 0)
 					return "OrderItemId" + strErrorPosInt;
 				break;
 			case 2:
 				// /Todo: check if OrderId is already in db (error if true)
-				if ((nOrderId = parseInt(strItem)) < 0)
+				if ((m_nOrderId = parseInt(strItem)) < 0)
 					return "OrderId" + strErrorPosInt;
 				break;
 			case 3:
-				strBuyerName = strItem;
+				m_strBuyerName = strItem;
 				break;
 			case 4:
-				strBuyerEmail = strItem;
-				if (!validateEmailAddress(strBuyerEmail))
+				m_strBuyerEmail = strItem;
+				if (!validateEmailAddress(m_strBuyerEmail))
 					return "Invalid email address";
 				break;
 			case 5:
-				strAddress = strItem;
+				m_strAddress = strItem;
 				break;
 			case 6:
-				if ((nPostCode = parseInt(strItem)) < 0)
+				if ((m_nPostCode = parseInt(strItem)) < 0)
 					return "PostCode" + strErrorPosInt;
 				break;
 			case 7:
-				if ((fSalePrice = parseFloat(strItem)) < 1.0f)
+				if ((m_fSalePrice = parseFloat(strItem)) < 1.0f)
 					return "Sale price must be >= 1.0f";
 				break;
 			case 8:
-				if ((fShippingPrice = parseFloat(strItem)) < 0.0f)
+				if ((m_fShippingPrice = parseFloat(strItem)) < 0.0f)
 					return "Shipping price must be >= 0.0f";
 				break;
 			case 9:
-				strSKU = strItem;
+				m_strSKU = strItem;
 				break;
 			case 10:
 				boolean bValid = false;
 				for (OrderStatus orderStatus : OrderStatus.values()) {
-					if (strItem.equalsIgnoreCase(orderStatus.m_strName)) {
-						eStatus = orderStatus;
+					if (strItem.equalsIgnoreCase(orderStatus.toString())) {
+						m_eStatus = orderStatus;
 						bValid = true;
 						break;
 					}
@@ -193,7 +197,7 @@ public class Order {
 					break;
 
 				try {
-					datOrderDate = m_dfFormat.parse(strItem);
+					m_datOrderDate = m_dfFormat.parse(strItem);
 				} catch (ParseException pe) {
 					return "Expected Date format is yyyy-MM-dd";
 				}
@@ -214,24 +218,24 @@ public class Order {
 	}
 
 	private String dbInsertOrder() {
-		fOrderTotalValue = fSalePrice + fShippingPrice;
+		m_fOrderTotalValue = m_fSalePrice + m_fShippingPrice;
 		final String strSQLCmd = "INSERT INTO Orders.order "
 				+ "( OrderId,BuyerName,BuyerEmail,OrderDate,OrderTotalValue,Address,Postcode) "
-				+ "VALUES (" + nOrderId + ", \"" + strBuyerName + "\", \""
-				+ strBuyerEmail + "\", \"" + m_dfFormat.format(datOrderDate)
-				+ "\", " + fOrderTotalValue + ", \"" + strAddress + "\", "
-				+ nPostCode + "  );";
+				+ "VALUES (" + m_nOrderId + ", \"" + m_strBuyerName + "\", \""
+				+ m_strBuyerEmail + "\", \"" + m_dfFormat.format(m_datOrderDate)
+				+ "\", " + m_fOrderTotalValue + ", \"" + m_strAddress + "\", "
+				+ m_nPostCode + "  );";
 
-		if (!dbHaveTableWithId("Orders.order", "OrderId", nOrderId)) return dbExecCommand(strSQLCmd); 
+		if (!dbHaveTableWithId("Orders.order", "OrderId", m_nOrderId)) return dbExecCommand(strSQLCmd); 
 		return null;
 	}
 
 	private String dbInsertOrderItem() {
-		float fTotalPrice = fSalePrice + fShippingPrice;
+		float fTotalPrice = m_fSalePrice + m_fShippingPrice;
 		final String strSQLCmd = "INSERT INTO Orders.order_item ( OrderItemId,OrderId,SalePrice,ShippingPrice,TotalItemPrice,SKU,Status ) "
-				+ "VALUES (" + nOrderItemId + "," + nOrderId + "," + fSalePrice + "," + fShippingPrice
-				+ "," + fTotalPrice	+ ",\"SKU\",\""	+ eStatus.m_strName + "\") ;";
-		if (dbHaveTableWithId("Orders.order_item", "OrderItemId", nOrderItemId))
+				+ "VALUES (" + m_nOrderItemId + "," + m_nOrderId + "," + m_fSalePrice + "," + m_fShippingPrice
+				+ "," + fTotalPrice	+ ",\"SKU\",\""	+ m_eStatus.m_strName + "\") ;";
+		if (dbHaveTableWithId("Orders.order_item", "OrderItemId", m_nOrderItemId))
 			return "OrderItemId already exists in DataBase";
 		else
 			return dbExecCommand(strSQLCmd);
@@ -243,13 +247,13 @@ public class Order {
 		MySQLConnector mySQLConnector = new MySQLConnector();
 		return 0 < mySQLConnector.countRawsOfSelect(strSQLCmd);
 	}
-	private String dbUpdateOrderTotalValue( int nXXXX) {
-		final String strSQLCmd = "UPDATE Orders.order SET OrderTotalValue = (SELECT  SUM(TotalItemPrice) FROM Orders.order_item WHERE OrderId = "+nXXXX+") WHERE OrderId = "+nXXXX+";";
+	private String dbUpdateOrderTotalValue( int nOrderId) {
+		final String strSQLCmd = "UPDATE Orders.order SET OrderTotalValue = (SELECT  SUM(TotalItemPrice) FROM Orders.order_item WHERE OrderId = "+nOrderId+") WHERE OrderId = "+nOrderId+";";
 		return dbExecCommand(strSQLCmd);
 	}
 	private String dbInsertItem() {
 		String strError = null;
 		if (null != (strError = dbInsertOrder()) || null != (strError = dbInsertOrderItem())) return strError;
-		return dbUpdateOrderTotalValue(nOrderId);
+		return dbUpdateOrderTotalValue(m_nOrderId);
 	}
 }

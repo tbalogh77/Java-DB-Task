@@ -123,7 +123,7 @@ public class Order {
 		}
 
 		ResponseFile.createFile(0, true, null);
-		return "CSVFile " + strCSVFileName + " processed without error";
+		return "OK";
 	}
 
 	public String fromCSV(int nLineNumber, List<String> lstHeader,

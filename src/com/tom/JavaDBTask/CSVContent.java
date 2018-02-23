@@ -41,6 +41,7 @@ public class CSVContent {
 	public boolean validateHeader(List<String> lstHeader) {
 		if (m_lstHeader.size() != lstHeader.size())
 			return false;
+
 		for (int i = 0; i < m_lstHeader.size(); i++) {
 			if (!m_lstHeader.get(i).equalsIgnoreCase(lstHeader.get(i))) {
 				System.out.println("Invalid CSV header: " + m_lstHeader.get(i)

@@ -5,8 +5,6 @@ import java.util.Vector;
 
 public class CSVContent {
 
-	////Todo: Lift'em up, shoot'em up
-
 	protected List<String> m_lstHeader = new Vector<String>();
 
 	public List<String> getHeader() {
@@ -18,13 +16,6 @@ public class CSVContent {
 	public List<List<String>> getLines() {
 		return m_lstLines;
 	}
-
-	/*
-	 * public List<List<String>> getContent() { if ( null == m_lstHeader || 0 ==
-	 * m_lstHeader.size()) return null; List<List<String>> lstContent = new
-	 * Vector<List<String>>(); lstContent.add(m_lstHeader); for ( List<String>
-	 * lstLine : m_lstLines ) lstContent.add(lstLine); return lstContent; }
-	 */
 	public void createHeader(String[] straHeaders) {
 		if (null == straHeaders)
 			return;
@@ -90,7 +81,6 @@ public class CSVContent {
 		if (null != strMsg)
 			System.out.println(strMsg);
 
-		///List<List<String>> lstContent = getContent();
 		System.out.println(getHeader().toString());
 		for (List<String> item : getLines())
 			System.out.println(item.toString());

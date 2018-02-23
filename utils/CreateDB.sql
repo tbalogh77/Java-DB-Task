@@ -10,9 +10,10 @@ CREATE TABLE Orders.order(
 	OrderId INT NOT NULL AUTO_INCREMENT, 
 	BuyerName VARCHAR(256),
 	BuyerEmail VARCHAR(256),
+	OrderDate DATE, 
 	OrderTotalValue FLOAT,
 	Address VARCHAR(256),
-	OrderDate DATE, 
+	Postcode INT,
 	PRIMARY KEY ( OrderId ) 
 );
 
@@ -20,9 +21,9 @@ CREATE TABLE Orders.order(
 CREATE TABLE Orders.order_item( 
 	OrderItemId INT NOT NULL AUTO_INCREMENT, 
 	OrderId INT,
-	SalePrice INT,
-	ShippingPrice INT,
-	TotalItemPrice INT,
+	SalePrice FLOAT,
+	ShippingPrice FLOAT,
+	TotalItemPrice FLOAT,
 	SKU VARCHAR(256),
 	Status ENUM('IN_STOCK', 'OUT_OF_STOCK'),
 	PRIMARY KEY ( OrderItemId ),
